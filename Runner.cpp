@@ -1,7 +1,14 @@
 #include "Engine.h"
-	
+
 int main() 
 {
-	shaders();
-	Load();
+    load();
+    shade();
+    display();
 }
+
+void loop() 
+{
+	
+}
+
