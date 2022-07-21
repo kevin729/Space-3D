@@ -16,10 +16,12 @@ int display(void)
         return -1;
     }
 
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    glewInit();
 
-    /* Loop until the user closes the window */
+    load();
+    shade();
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
