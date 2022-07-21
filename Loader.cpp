@@ -20,7 +20,10 @@ void load()
 
 	unsigned int verticesBuffer;
 	glGenBuffers(1, &verticesBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, verticesBuffer);
+
+	std::cout << verticesBuffer;
+
+	/*glBindBuffer(GL_ARRAY_BUFFER, verticesBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * sizeof(float), &vertices, GL_STATIC_DRAW);
 
 
@@ -47,5 +50,5 @@ void load()
 	model.indicesBuffer = indicesBuffer;
 
 	entitiesIt = entities.begin();
-	entities.insert(entitiesIt, model);
+	entities.insert(entitiesIt, model);*/
 }
