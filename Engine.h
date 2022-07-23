@@ -1,12 +1,12 @@
 #pragma once
 #include <vector>;
+#include <string>
 
 struct Model {
 	unsigned int vertexBuffer;
 	int textureCoBuffer;
 	int normalBuffer;
 	int indicesBuffer;
-	int indicesLength;
 };
 
 struct Shader {
