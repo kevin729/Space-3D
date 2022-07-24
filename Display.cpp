@@ -20,14 +20,14 @@ int display(void)
     glfwMakeContextCurrent(window);
     glewInit();
 
-    load();
     shade();
+    load();
+    
     Shader shader = getShaders()[0];
-    std::cout << shader.textureCoLocation;
 
     while (!glfwWindowShouldClose(window))
     {
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
         render();

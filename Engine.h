@@ -2,11 +2,13 @@
 #include <vector>;
 #include <string>
 
-struct Model {
+struct Entity {
 	unsigned int vertexBuffer;
-	int textureCoBuffer;
-	int normalBuffer;
-	int indicesBuffer;
+	unsigned int textureCoBuffer;
+	unsigned int normalBuffer;
+	unsigned int indicesBuffer;
+	unsigned int indicesLength;
+	unsigned int textureBuffer;
 };
 
 struct Shader {
@@ -16,7 +18,7 @@ struct Shader {
 	unsigned int normalLocation;
 };
 
-std::vector<Model> getEntities();
+std::vector<Entity> getEntities();
 std::vector<Shader> getShaders();
 
 int display();
