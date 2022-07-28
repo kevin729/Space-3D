@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include "Engine.h"
-#include <Magick++.h>
 #include <stb/stb_image.h>
 
 std::vector<Entity> entities;
@@ -14,10 +13,9 @@ std::vector<Entity> getEntities() {
 void loadTexture(const char* path, unsigned int* textureBuffer) {
 	glGenTextures(1, textureBuffer);
 	glBindTexture(GL_TEXTURE_2D, *textureBuffer);
-	glActiveTexture(GL_TEXTURE0);
 
 	int w, h, numColCh;
-	unsigned char* bytes = stbi_load("ship.png", &w, &h, &numColCh, 0);
+	unsigned char* bytes = stbi_load(path, &w, &h, &numColCh, 0);
 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -31,8 +29,10 @@ void loadTexture(const char* path, unsigned int* textureBuffer) {
 	glBindBuffer(GL_TEXTURE_2D, 0);
 }
 
-void load() {
-	const float vertices[18] = { -1.0f,1.0f,0.0f,
+void load(const char* texture1Path, const char* texture2Path) {
+	const float vertices[18] = { 
+								//FRONT	
+							     -1.0f,1.0f,0.0f,
 								 -1.0f,-1.0f,0.0f,
 								  1.0f,-1.0f,0.0f,
 								  -1.0f,1.0f,0.0f,
@@ -64,16 +64,19 @@ void load() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	unsigned int textureBuffer;
-	loadTexture("ship.png", &textureBuffer);
+	loadTexture(texture1Path, &textureBuffer);
+	unsigned int overlayTextureBuffer;
+	loadTexture(texture2Path, &overlayTextureBuffer);
 
-	Entity model = Entity();
-	model.vertexBuffer = verticesBuffer;
-	model.textureCoBuffer = textureCoBuffer;
-	model.normalBuffer = normalsBuffer;
-	model.indicesBuffer = indicesBuffer;
-	model.indicesLength = sizeof(indices);
-	model.textureBuffer = textureBuffer;
+	Entity entity = Entity();
+	entity.vertexBuffer = verticesBuffer;
+	entity.textureCoBuffer = textureCoBuffer;
+	entity.normalBuffer = normalsBuffer;
+	entity.indicesBuffer = indicesBuffer;
+	entity.indicesLength = sizeof(indices);
+	entity.textureBuffer = textureBuffer;
+	entity.overlayTextureBuffer = overlayTextureBuffer;
 
-	auto it = entities.begin();
-	entities.insert(it, model);
+	entities.push_back(entity);
 }
+

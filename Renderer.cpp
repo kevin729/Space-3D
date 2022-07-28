@@ -3,14 +3,26 @@
 #include "Engine.h"
 #include <vector>
 #include <iostream>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
+#include <glm/ext/scalar_constants.hpp> // glm::pi
+#include <glm/gtc/type_ptr.hpp>
 
-void renderTest() {
+void loadTransform(Shader shader) {
+	glm::mat4 projection, view, transform;
+	projection = glm::perspective(glm::radians(90.0f), (float)getScreenWidth() / (float)getScreenWidth(), 0.1f, 10.0f);
+	transform *= glm::translate(transform, glm::vec3(0, 0, -5));
+	transform *= glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
+	
 
-	glBegin(GL_TRIANGLES);
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 0.0f);
-	glEnd();
+	glUniformMatrix4fv(shader.projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(shader.viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(shader.transformLocation, 1, GL_FALSE, glm::value_ptr(transform));
+
 }
 
 void render() {
@@ -20,6 +32,7 @@ void render() {
 		Shader shader = getShaders()[0];
 
 		glUseProgram(shader.program);
+		
 		glBindBuffer(GL_ARRAY_BUFFER, entity.vertexBuffer);
 		glVertexAttribPointer(shader.vertexLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		
@@ -29,11 +42,15 @@ void render() {
 		glBindBuffer(GL_ARRAY_BUFFER, entity.normalBuffer);
 		glVertexAttribPointer(shader.normalLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
+		loadTransform(shader);
+		glUniform1i(shader.texture1Location, 0);
+		glUniform1i(shader.texture2Location, 1);
 		
-		glBindTexture(GL_TEXTURE_2D, entity.textureBuffer);
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, entity.textureBuffer);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, entity.overlayTextureBuffer);
 		
-
 		glEnableVertexAttribArray(shader.vertexLocation);
 		glEnableVertexAttribArray(shader.textureCoLocation);
 		glEnableVertexAttribArray(shader.normalLocation);
@@ -44,7 +61,8 @@ void render() {
 		glDisableVertexAttribArray(shader.textureCoLocation);
 		glDisableVertexAttribArray(shader.normalLocation);
 
-		glBindTexture(GL_ARRAY_BUFFER, entity.textureBuffer);
-		glBindTexture(GL_TEXTURE_2D, entity.textureBuffer);
+		glBindTexture(GL_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUseProgram(0);
 	}
 }

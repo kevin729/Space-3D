@@ -5,6 +5,9 @@
 #include <fstream>
 #include "string";
 #include <sstream>;
+#include <glm/mat4x4.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 std::vector<Shader> shaders;
 
@@ -25,17 +28,17 @@ void validate(int shader) {
 	}
 }
 
-void entityShade(std::string* vertexPath, std::string* fragmentPath) {
+unsigned int setupShader(const char* vertexPath, const char* fragmentPath) {
 	std::stringstream ss[2];
 
-	std::ifstream vertexStream(*vertexPath);
+	std::ifstream vertexStream(vertexPath);
 	std::string vertexline;
 	while (getline(vertexStream, vertexline))
 	{
 		ss[0] << vertexline << '\n';
 	}
 
-	std::ifstream fragmentStream(*fragmentPath);
+	std::ifstream fragmentStream(fragmentPath);
 	std::string fragmentline;
 	while (getline(fragmentStream, fragmentline))
 	{
@@ -66,20 +69,30 @@ void entityShade(std::string* vertexPath, std::string* fragmentPath) {
 	validate(vertexShader);
 	validate(fragmentShader);
 
+	return program;
+}
+
+void entityShade(const char* vertexPath, const char* fragmentPath) {
+
+	unsigned int program = setupShader(vertexPath, fragmentPath);
+
 	Shader shader = Shader();
 	shader.program = program;
 	shader.vertexLocation = glGetAttribLocation(program, "vertex");
 	shader.textureCoLocation = glGetAttribLocation(program, "textureCo");
 	shader.normalLocation = glGetAttribLocation(program, "normal");
-
+	shader.texture1Location = glGetUniformLocation(program, "tex1");
+	shader.texture2Location = glGetUniformLocation(program, "tex2");
+	shader.transformLocation = glGetUniformLocation(program, "transform");
+	shader.viewLocation = glGetUniformLocation(program, "view");
+	shader.projectionLocation = glGetUniformLocation(program, "projection");
+	
 	shaders.push_back(shader);
 }
 
 void shade()
 {	
-	std::string vertexFile = "vertex.shader";
-	std::string fragmentFile = "fragment.shader";
-	entityShade(&vertexFile, &fragmentFile);
+	entityShade("vertex.shader", "fragment.shader");
 }
 
 std::vector<Shader> getShaders()
