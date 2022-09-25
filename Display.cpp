@@ -46,7 +46,7 @@ int display(void)
     shade();
     
     load("space.png", "space.png");
-    load("ship.png", "rock.png");
+    //load("ship.png", "rock.png");
     
     Shader shader = getShaders()[0];
 

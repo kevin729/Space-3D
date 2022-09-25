@@ -14,10 +14,9 @@
 
 void loadTransform(Shader shader) {
 	glm::mat4 projection, view, transform;
-	projection = glm::perspective(glm::radians(90.0f), (float)getScreenWidth() / (float)getScreenWidth(), 0.1f, 10.0f);
-	transform *= glm::translate(transform, glm::vec3(0, 0, -5));
-	transform *= glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
-	
+	projection = glm::perspective(glm::radians(90.0f), (float)getScreenWidth() / (float)getScreenHeight(), 0.1f, 10.0f);
+	transform = glm::translate(transform, glm::vec3(0, 0, -5));
+	transform = glm::scale(transform, glm::vec3(1.0f, 1.0f, 1.0f));
 
 	glUniformMatrix4fv(shader.projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(shader.viewLocation, 1, GL_FALSE, glm::value_ptr(view));
