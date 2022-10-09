@@ -5,21 +5,24 @@
 #include "Engine.h"
 #include <stb/stb_image.h>
 
-std::vector<Entity> entities;
-std::vector<Entity> getEntities() {
+std::vector<Entity*> entities;
+std::vector<Entity*> getEntities() {
 	return entities;
 }
 
-void loadTexture(const char* path, unsigned int* textureBuffer) {
-	glGenTextures(1, textureBuffer);
-	glBindTexture(GL_TEXTURE_2D, *textureBuffer);
+/**
+* creates and binds the textureBuffer and sets the data to buffer
+**/
+void loadTexture(const char* path, unsigned int& textureBuffer) {
+	glGenTextures(1, &textureBuffer);
+	glBindTexture(GL_TEXTURE_2D, textureBuffer);
 
 	int w, h, numColCh;
 	unsigned char* bytes = stbi_load(path, &w, &h, &numColCh, 0);
 
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -29,7 +32,10 @@ void loadTexture(const char* path, unsigned int* textureBuffer) {
 	glBindBuffer(GL_TEXTURE_2D, 0);
 }
 
-void load(const char* texture1Path, const char* texture2Path) {
+/**
+* loads a quad with a outline texture and a texture to apply to the quad
+*/
+void load(const char* texture1Path, const char* texture2Path, Entity& entity) {
 	const float vertices[18] = { 
 								//FRONT	
 							     -1.0f,1.0f,0.0f,
@@ -64,11 +70,10 @@ void load(const char* texture1Path, const char* texture2Path) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	unsigned int textureBuffer;
-	loadTexture(texture1Path, &textureBuffer);
+	loadTexture(texture1Path, textureBuffer);
 	unsigned int overlayTextureBuffer;
-	loadTexture(texture2Path, &overlayTextureBuffer);
+	loadTexture(texture2Path, overlayTextureBuffer);
 
-	Entity entity = Entity();
 	entity.vertexBuffer = verticesBuffer;
 	entity.textureCoBuffer = textureCoBuffer;
 	entity.normalBuffer = normalsBuffer;
@@ -77,6 +82,6 @@ void load(const char* texture1Path, const char* texture2Path) {
 	entity.textureBuffer = textureBuffer;
 	entity.overlayTextureBuffer = overlayTextureBuffer;
 
-	entities.push_back(entity);
+	entities.push_back(&entity);
 }
 

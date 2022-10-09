@@ -5,6 +5,10 @@
 unsigned int getScreenWidth();
 unsigned int getScreenHeight();
 
+struct Camera {
+	float x = 0, y = 0, z = 0;
+};
+
 struct Entity {
 	unsigned int vertexBuffer;
 	unsigned int textureCoBuffer;
@@ -14,7 +18,9 @@ struct Entity {
 	unsigned int textureBuffer;
 	unsigned int overlayTextureBuffer;
 
-	float position[3] = {0, 0, 0};
+	float x = 0;
+	float y = 0;
+	float z = -0.5;
 	float rotation[3] = {0, 0, 0};
 	float scale[3] = {1, 1, 1};
 };
@@ -31,10 +37,12 @@ struct Shader {
 	unsigned int projectionLocation;
 };
 
-std::vector<Entity> getEntities();
+std::vector<Entity*> getEntities();
 std::vector<Shader> getShaders();
 
 int display();
-void load(const char* texture1Path, const char* texture2Path);
+void load(const char* texture1Path, const char* texture2Path, Entity& entity);
 void shade();
+Camera* getCamera();
+void update();
 void render();
