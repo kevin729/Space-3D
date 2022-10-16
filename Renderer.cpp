@@ -12,21 +12,20 @@
 #include <glm/ext/scalar_constants.hpp> // glm::pi
 #include <glm/gtc/type_ptr.hpp>
 
-void loadTransform(Shader shader, Entity& entity) {
+void loadTransform(Shader shader, Entity entity) {
+	Entity player = getPlayer();
 	Camera camera = *getCamera();
 	glm::mat4 projection, view, translate;
 	projection = glm::perspective(glm::radians(90.0f), (float)getScreenWidth() / (float)getScreenHeight(), 0.1f, 10.0f);
 	translate = glm::translate(glm::mat4(1.f), glm::vec3(entity.x, entity.y, entity.z));
-	translate *= glm::rotate(glm::mat4(1.f), entity.rotation[0] * 3.14159f/180, glm::vec3(1, 0, 0));
+	translate *= glm::rotate(glm::mat4(1.f), entity.rotation[0] * 3.14159f / 180, glm::vec3(1, 0, 0));
 	translate *= glm::rotate(glm::mat4(1.f), entity.rotation[1] * 3.14159f / 180, glm::vec3(0, 1, 0));
 	translate *= glm::rotate(glm::mat4(1.f), entity.rotation[2] * 3.14159f / 180, glm::vec3(0, 0, 1));
 	translate *= glm::scale(glm::mat4(1.f), glm::vec3(entity.scale[0], entity.scale[1], entity.scale[2]));
-	view = glm::lookAt(glm::vec3(camera.x, camera.y, 0), glm::vec3(camera.x, camera.y, -1), glm::vec3(0, 1, 0));
+	view = glm::lookAt(glm::vec3(camera.x, camera.y, camera.z), glm::vec3(player.x, player.y, player.z), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(shader.projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(shader.viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(shader.transformLocation, 1, GL_FALSE, glm::value_ptr(translate));
-
-	//glm::vec3(0.5, -0.5, 0), glm::vec3(0.5, -0.5, -1)
 }
 
 void render() {

@@ -6,7 +6,7 @@ unsigned int getScreenWidth();
 unsigned int getScreenHeight();
 
 struct Camera {
-	float x = 0, y = 0, z = 0;
+	float x = -1, y = 0, z = 0;
 };
 
 struct Entity {
@@ -20,7 +20,7 @@ struct Entity {
 
 	float x = 0;
 	float y = 0;
-	float z = -0.5;
+	float z = 0;
 	float rotation[3] = {0, 0, 0};
 	float scale[3] = {1, 1, 1};
 };
@@ -46,3 +46,5 @@ void shade();
 Camera* getCamera();
 void update();
 void render();
+
+Entity getPlayer();

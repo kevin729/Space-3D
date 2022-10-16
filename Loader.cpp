@@ -84,4 +84,3 @@ void load(const char* texture1Path, const char* texture2Path, Entity& entity) {
 
 	entities.push_back(&entity);
 }
-

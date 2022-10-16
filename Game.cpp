@@ -1,5 +1,8 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
+#include <GL/GL.h>
+#include <GL/freeglut.h>
+
 #include "Engine.h";
 #include "wtypes.h";
 #include <iostream>;
@@ -7,6 +10,15 @@
 unsigned int width;
 unsigned int height;
 Camera camera = Camera();
+Entity space = Entity();
+Entity player = Entity();
+
+void follow(Entity e);
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+Entity getPlayer() {
+    return player;
+}
 
 unsigned int getScreenWidth() {
     return width;
@@ -38,7 +50,6 @@ int display()
         return -1;
 
     GLFWwindow* window = loadWindow();
-
     if (!window)
     {
         glfwTerminate();
@@ -47,12 +58,10 @@ int display()
 
     glfwMakeContextCurrent(window);
     glewInit();
+    glfwSetKeyCallback(window, keyboard);
 
     shade();
     
-    Entity space = Entity();
-    Entity player = Entity();
-
     //loads the texture and pushes the memory address of the entity 
     load("space.png", "space.png", space);
     load("ship.png", "ship.png", player);
@@ -64,18 +73,27 @@ int display()
     player.scale[0] = 0.2;
     player.scale[1] = 0.2;
     player.scale[2] = 0.2;
-    player.z = -5;
+    player.z = 5;
 
     Shader shader = getShaders()[0];
 
     while (!glfwWindowShouldClose(window))
     {
-        glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        //player.y -= 0.00001f;
-
-        camera.x += 0.001f;
+        
+        if (player.z <= -5) 
+        {
+            player.z = -5;
+            follow(player);
+        }
+        else 
+        {
+            player.z -= 0.0015;
+            player.rotation[0] += 0.05;
+            player.rotation[2] += 0.05;
+        }
 
         update();
         render();
@@ -86,4 +104,33 @@ int display()
 
     glfwTerminate();
     return 0;
+}
+
+void follow(Entity e) 
+{
+    camera.x = e.x;
+    camera.y = e.y;
+}
+
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == 'W' || key == 'UP') {
+        player.y += 0.1;
+        player.rotation[2] = 0;
+    }
+
+    if (key == 'S' || key == 'DOWN') {
+        player.y -= 0.1;
+        player.rotation[2] = 180;
+    }
+
+    if (key == 'A' || key == 'LEFT') {
+        player.x -= 0.1;
+        player.rotation[2] = 90;
+    }
+
+    if (key == 'D' || key == 'RIGH') {
+        player.x += 0.1;
+        player.rotation[2] = 270;
+    }
 }
