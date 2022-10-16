@@ -13,7 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 void loadTransform(Shader shader, Entity entity) {
-	Entity player = getPlayer();
+	Entity player = *getPlayer();
 	Camera camera = *getCamera();
 	glm::mat4 projection, view, translate;
 	projection = glm::perspective(glm::radians(90.0f), (float)getScreenWidth() / (float)getScreenHeight(), 0.1f, 10.0f);

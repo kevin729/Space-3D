@@ -9,6 +9,15 @@ struct Camera {
 	float x = -1, y = 0, z = 0;
 };
 
+struct Keyboard {
+	bool keys[256];
+	bool UP;
+	bool DOWN;
+	bool LEFT;
+	bool RIGHT;
+	bool FIRE;
+};
+
 struct Entity {
 	unsigned int vertexBuffer;
 	unsigned int textureCoBuffer;
@@ -44,7 +53,10 @@ int display();
 void load(const char* texture1Path, const char* texture2Path, Entity& entity);
 void shade();
 Camera* getCamera();
+Keyboard* getKeyboard();
+
 void update();
+void updatePlayer(Entity& player, Keyboard& keyboard);
 void render();
 
-Entity getPlayer();
+Entity* getPlayer();

@@ -12,125 +12,132 @@ unsigned int height;
 Camera camera = Camera();
 Entity space = Entity();
 Entity player = Entity();
+Entity enemy = Entity();
 
 void follow(Entity e);
-void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
+void keyboardCallBack(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-Entity getPlayer() {
-    return player;
+Keyboard keyboard;
+
+Keyboard* getKeyboard() {
+	return &keyboard;
+}
+
+Entity* getPlayer() {
+	return &player;
 }
 
 unsigned int getScreenWidth() {
-    return width;
+	return width;
 }
 
 unsigned int getScreenHeight() {
-    return height;
+	return height;
 }
 
 Camera* getCamera() {
-    return &camera;
+	return &camera;
 }
 
 GLFWwindow* loadWindow() {
 
-    RECT rect;
-    const HWND desktop = GetDesktopWindow();
-    GetWindowRect(desktop, &rect);
+	RECT rect;
+	const HWND desktop = GetDesktopWindow();
+	GetWindowRect(desktop, &rect);
 
-    width = rect.right;
-    height = rect.bottom;
+	width = rect.right;
+	height = rect.bottom;
 
-    return glfwCreateWindow(rect.right, rect.bottom, "Star Warrior", NULL, NULL);
+	return glfwCreateWindow(rect.right, rect.bottom, "Star Warrior", NULL, NULL);
 }
 
 int display()
 {
-    if (!glfwInit())
-        return -1;
+	if (!glfwInit())
+		return -1;
 
-    GLFWwindow* window = loadWindow();
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
+	GLFWwindow* window = loadWindow();
+	if (!window)
+	{
+		glfwTerminate();
+		return -1;
+	}
 
-    glfwMakeContextCurrent(window);
-    glewInit();
-    glfwSetKeyCallback(window, keyboard);
+	glfwMakeContextCurrent(window);
+	glewInit();
+	glfwSetKeyCallback(window, keyboardCallBack);
+	keyboard = Keyboard();
 
-    shade();
-    
-    //loads the texture and pushes the memory address of the entity 
-    load("space.png", "space.png", space);
-    load("ship.png", "ship.png", player);
+	shade();
 
-    space.scale[0] = 10;
-    space.scale[1] = 10;
-    space.z = -5;
+	//loads the texture and pushes the memory address of the entity 
+	load("space.png", "space.png", space);
+	load("ship.png", "ship.png", player);
+	load("ship.png", "rock.png", enemy);
 
-    player.scale[0] = 0.2;
-    player.scale[1] = 0.2;
-    player.scale[2] = 0.2;
-    player.z = 5;
+	space.scale[0] = 10;
+	space.scale[1] = 10;
+	space.z = -5;
 
-    Shader shader = getShaders()[0];
+	player.scale[0] = 0.2;
+	player.scale[1] = 0.2;
+	player.scale[2] = 0.2;
+	player.z = 5;
 
-    while (!glfwWindowShouldClose(window))
-    {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        
-        if (player.z <= -5) 
-        {
-            player.z = -5;
-            follow(player);
-        }
-        else 
-        {
-            player.z -= 0.0015;
-            player.rotation[0] += 0.05;
-            player.rotation[2] += 0.05;
-        }
+	enemy.x = 1;
+	enemy.z = 5;
 
-        update();
-        render();
+	Shader shader = getShaders()[0];
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
+	while (!glfwWindowShouldClose(window))
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-    glfwTerminate();
-    return 0;
+
+		if (player.z <= -5)
+		{
+			player.z = -5;
+			enemy.z = -5;
+			follow(player);
+		}
+		else
+		{
+			player.z -= 0.01;
+			player.rotation[0] += 0.05;
+			player.rotation[2] += 0.05;
+
+			enemy.z -= 0.01;
+			enemy.rotation[0] += 0.05;
+			enemy.rotation[2] += 0.05;
+		}
+
+
+		update();
+		updatePlayer(player, keyboard);
+		render();
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glfwTerminate();
+	return 0;
 }
 
-void follow(Entity e) 
+void follow(Entity e)
 {
-    camera.x = e.x;
-    camera.y = e.y;
+	camera.x = e.x;
+	camera.y = e.y;
 }
 
-void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods)
+void keyboardCallBack(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == 'W' || key == 'UP') {
-        player.y += 0.1;
-        player.rotation[2] = 0;
-    }
-
-    if (key == 'S' || key == 'DOWN') {
-        player.y -= 0.1;
-        player.rotation[2] = 180;
-    }
-
-    if (key == 'A' || key == 'LEFT') {
-        player.x -= 0.1;
-        player.rotation[2] = 90;
-    }
-
-    if (key == 'D' || key == 'RIGH') {
-        player.x += 0.1;
-        player.rotation[2] = 270;
-    }
+	if (action == GLFW_PRESS) {
+		keyboard.keys[key] = true;
+	}
+	else if (action == GLFW_RELEASE) {
+		keyboard.keys[key] = false;
+	}
+	
 }
